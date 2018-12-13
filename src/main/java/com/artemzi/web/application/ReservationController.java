@@ -1,4 +1,4 @@
-package com.artemzi.data.web.application;
+package com.artemzi.web.application;
 
 import com.artemzi.domains.RoomReservation;
 import com.artemzi.services.ReservationService;

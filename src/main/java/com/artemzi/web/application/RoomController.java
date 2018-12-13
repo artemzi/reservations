@@ -1,4 +1,4 @@
-package com.artemzi.data.web.application;
+package com.artemzi.web.application;
 
 import com.artemzi.data.entity.Room;
 import com.artemzi.data.repository.RoomRepository;
