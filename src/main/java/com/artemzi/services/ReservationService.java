@@ -10,6 +10,8 @@ import com.artemzi.domains.RoomReservation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -25,10 +27,11 @@ public class ReservationService {
         this.reservationRepository = reservationRepository;
     }
 
-    public List<RoomReservation> getRoomReservationForDate(Date date) {
+    public List<RoomReservation> getRoomReservationsForDate(String dateString){
+        Date date = this.createDateFromDateString(dateString);
         Iterable<Room> rooms = this.roomRepository.findAll();
         Map<Long, RoomReservation> roomReservationMap = new HashMap<>();
-        rooms.forEach(room -> {
+        rooms.forEach(room->{
             RoomReservation roomReservation = new RoomReservation();
             roomReservation.setRoomId(room.getId());
             roomReservation.setRoomName(room.getName());
@@ -36,10 +39,10 @@ public class ReservationService {
             roomReservationMap.put(room.getId(), roomReservation);
         });
         Iterable<Reservation> reservations = this.reservationRepository.findByDate(new java.sql.Date(date.getTime()));
-        if (null != reservations) {
+        if(null!=reservations){
             reservations.forEach(reservation -> {
                 Optional<Guest> guestResponse = this.guestRepository.findById(reservation.getGuestId());
-                if (guestResponse.isPresent()) {
+                if(guestResponse.isPresent()){
                     Guest guest = guestResponse.get();
                     RoomReservation roomReservation = roomReservationMap.get(reservation.getId());
                     roomReservation.setDate(date);
@@ -54,5 +57,19 @@ public class ReservationService {
             roomReservations.add(roomReservationMap.get(room.getKey()));
         }
         return roomReservations;
+    }
+
+    private Date createDateFromDateString(String dateString){
+        Date date;
+        if(null!=dateString) {
+            try {
+                date = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
+            }catch(ParseException pe){
+                date = new Date();
+            }
+        }else{
+            date = new Date();
+        }
+        return date;
     }
 }
